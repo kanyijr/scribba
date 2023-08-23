@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div id = "content">
+        <h1>Scribba</h1>
+        <div>
+            <input type="text" name="" id="student" placeholder="
+            type your name">
+            <span  id="instructions"></span>
+            <button id="advanceBtn" onclick="start()">
+               START
+            </button>
+        </div>
+        <br>
+        <div id="sketchPadContainer"
+            style="visibility: hidden;">
+        </div>
+
+    </div>
+<script src="js/draw.js"></script>    
+<script src="js/sketchpad.js"></script>   
+
+<script>
+    let index = 0;
+    const labels = ["car", "fish", "house", "tree", 
+      "bicycle", "guitar", "pencil", "clock"];
+
+    const data = {
+        student:null,
+        session:new Date().getTime(),
+        drawings:{}
+    }
+    var container = document.getElementById("sketchPadContainer");
+    const sketchpad = new sketchPad(container);
+
+    function start(){
+        if(student.value==""){
+            alert("please type your name first");
+            return;
+        }
+        data.student = student.value;
+        student.style.display = "none";
+        container.style.visibility= "visible";
+        const label = labels[index];
+        instructions.innerHTML = "Please draw a "+ label;
+        advanceBtn.innerHTML = "NEXT";
+        advanceBtn.onclick = next;
+
+    }
+
+    function next(){
+        if(sketchpad.paths.length == 0){
+            alert("draw something");
+            return
+        }
+        const label = labels[index];
+        data.drawings[label] = sketchpad.paths;
+        sketchpad.reset();
+        if(index+1<labels.length){
+            index++;
+            const nextLabel = labels[index];
+            instructions.innerHTML = "Please draw a " + nextLabel;
+        }else{
+            container.style.visibility = "hidden";
+            instructions.innerHTML = "Thank you!";
+            advanceBtn.innerHTML = "SAVE";
+            advanceBtn.onclick = save;
+        }
+
+       
+
+
+    }
+    
+    function save(){
+        advanceBtn.style.display = "none";
+        instructions.innerHTML = "Take your downloaded file and place it alongside the others in dataset";
+
+        const element = document.createElement("a");
+        element.setAttribute("href", 
+          'data:text/plain;charset=utf-8,'+
+          encodeURIComponent(JSON.stringify(data))
+        );
+        const fileName = data.session + ".json";
+        element.setAttribute("download", fileName);
+        element.style.display="none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    }
+</script> 
+</body>
+</html>
